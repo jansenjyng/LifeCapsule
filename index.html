@@ -1,152 +1,290 @@
-{\rtf1\ansi\ansicpg1252\cocoartf2868
-\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fnil\fcharset0 AppleColorEmoji;}
-{\colortbl;\red255\green255\blue255;}
-{\*\expandedcolortbl;;}
-\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+import React, { useState, useEffect } from 'react';
+import { 
+  ShieldCheck, 
+  Heart, 
+  Bell, 
+  Lock, 
+  Users,
+  ChevronRight, 
+  Menu, 
+  X, 
+  CheckCircle2, 
+  Download,
+  Smartphone,
+  ShieldAlert,
+  ArrowRight,
+  Star
+} from 'lucide-react';
 
-\f0\fs24 \cf0 <!DOCTYPE html>\
-<html lang="en">\
-<head>\
-  <meta charset="UTF-8">\
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">\
-  <title>Life Capsule \'96 Ageing Actively with Peace of Mind</title>\
-  <style>\
-    body \{\
-      margin: 0;\
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;\
-      color: #1a1a1a;\
-      background: #f9fafb;\
-    \}\
-    header \{\
-      padding: 20px 40px;\
-      display: flex;\
-      justify-content: space-between;\
-      align-items: center;\
-      background: white;\
-    \}\
-    .logo \{\
-      font-weight: bold;\
-      font-size: 20px;\
-    \}\
-    .btn \{\
-      padding: 12px 20px;\
-      background: #2563eb;\
-      color: white;\
-      border-radius: 8px;\
-      text-decoration: none;\
-      font-weight: 600;\
-    \}\
-    .hero \{\
-      text-align: center;\
-      padding: 80px 20px;\
-      background: linear-gradient(to bottom, #ffffff, #eef2ff);\
-    \}\
-    .hero h1 \{\
-      font-size: 42px;\
-      margin-bottom: 20px;\
-    \}\
-    .hero p \{\
-      font-size: 18px;\
-      max-width: 600px;\
-      margin: auto;\
-      color: #555;\
-    \}\
-    .features \{\
-      display: grid;\
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));\
-      gap: 20px;\
-      padding: 60px 40px;\
-    \}\
-    .feature \{\
-      background: white;\
-      padding: 20px;\
-      border-radius: 12px;\
-      box-shadow: 0 4px 10px rgba(0,0,0,0.05);\
-    \}\
-    .feature h3 \{\
-      margin-top: 10px;\
-    \}\
-    .cta \{\
-      text-align: center;\
-      padding: 60px 20px;\
-      background: #2563eb;\
-      color: white;\
-    \}\
-    .cta h2 \{\
-      margin-bottom: 20px;\
-    \}\
-    footer \{\
-      text-align: center;\
-      padding: 20px;\
-      font-size: 14px;\
-      color: #777;\
-    \}\
-  </style>\
-</head>\
-\
-<body>\
-\
-<header>\
-  <div class="logo">Life Capsule</div>\
-  <a href="#install" class="btn">Install App</a>\
-</header>\
-\
-<section class="hero">\
-  <h1>Age Actively with Peace of Mind</h1>\
-  <p>\
-    Stay connected, prepared, and supported. Life Capsule ensures you are never alone, \
-    while easing the burden on your loved ones.\
-  </p>\
-  <br>\
-  <a href="#install" class="btn">Download Now</a>\
-</section>\
-\
-<section class="features">\
-  <div class="feature">\
-    <h3>
-\f1 \uc0\u55357 \u56562 
-\f0  Daily Check-In</h3>\
-    <p>Automatic alerts to loved ones if you're inactive, ensuring your safety every day.</p>\
-  </div>\
-\
-  <div class="feature">\
-    <h3>
-\f1 \uc0\u55357 \u56592 
-\f0  The Vault</h3>\
-    <p>Securely store important information like documents and final arrangements.</p>\
-  </div>\
-\
-  <div class="feature">\
-    <h3>
-\f1 \uc0\u55357 \u56492 
-\f0  Last Words</h3>\
-    <p>Leave meaningful messages, videos, or voice notes for your loved ones.</p>\
-  </div>\
-\
-  <div class="feature">\
-    <h3>
-\f1 \uc0\u55358 \u56605 
-\f0  Digital Kampong</h3>\
-    <p>Connect with a supportive community, find friends, and join social activities.</p>\
-  </div>\
-</section>\
-\
-<section class="cta" id="install">\
-  <h2>Start Your Journey Today</h2>\
-  <p>Join our early users and experience a new way of ageing with dignity and connection.</p>\
-  <br>\
-  <a href="#" class="btn">
-\f1 \uc0\u55356 \u57166 
-\f0  App Store</a>\
-  <a href="#" class="btn">
-\f1 \uc0\u55358 \u56598 
-\f0  Google Play</a>\
-</section>\
-\
-<footer>\
-  \'a9 2026 Life Capsule. All rights reserved.\
-</footer>\
-\
-</body>\
-</html>}
+// Firebase Imports (Used for lead tracking/analytics)
+import { initializeApp } from 'firebase/app';
+import { getAuth, signInAnonymously } from 'firebase/auth';
+import { getFirestore, collection, addDoc, serverTimestamp } from 'firebase/firestore';
+
+// Initialize Firebase
+const firebaseConfig = JSON.parse(__firebase_config);
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const appId = typeof __app_id !== 'undefined' ? __app_id : 'life-capsule-install';
+
+const App = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [installClicked, setInstallClicked] = useState(false);
+
+  useEffect(() => {
+    signInAnonymously(auth);
+  }, []);
+
+  const trackInstallClick = async (platform) => {
+    setInstallClicked(true);
+    try {
+      await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'installs'), {
+        platform,
+        timestamp: serverTimestamp(),
+        userAgent: navigator.userAgent
+      });
+    } catch (e) {
+      console.error(e);
+    }
+    // In a real scenario, window.location.href = "store-url";
+  };
+
+  return (
+    <div className="min-h-screen bg-white font-sans text-slate-900 scroll-smooth">
+      {/* Navigation */}
+      <nav className="bg-white/90 backdrop-blur-md border-b sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <div className="bg-emerald-600 p-2 rounded-xl shadow-lg shadow-emerald-100">
+              <ShieldCheck className="text-white w-6 h-6" />
+            </div>
+            <span className="text-2xl font-bold tracking-tight text-emerald-900">Your Life Capsule</span>
+          </div>
+          
+          <div className="hidden md:flex items-center gap-8">
+            <a href="#features" className="text-slate-600 hover:text-emerald-600 font-semibold transition-colors">How it Works</a>
+            <a href="#vision" className="text-slate-600 hover:text-emerald-600 font-semibold transition-colors">Our Vision</a>
+            <button 
+              onClick={() => document.getElementById('install').scrollIntoView()}
+              className="bg-emerald-600 text-white px-6 py-2.5 rounded-full font-bold hover:bg-emerald-700 transition-all shadow-md"
+            >
+              Install Now
+            </button>
+          </div>
+
+          <button className="md:hidden p-2" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+            {isMenuOpen ? <X /> : <Menu />}
+          </button>
+        </div>
+      </nav>
+
+      {/* Hero Section */}
+      <header className="relative pt-16 pb-24 lg:pt-32 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div className="z-10">
+              <div className="inline-flex items-center gap-2 bg-emerald-50 text-emerald-700 px-4 py-2 rounded-full text-sm font-bold mb-8">
+                <Star className="w-4 h-4 fill-emerald-600" /> TOP-RATED ACTIVE AGEING APP
+              </div>
+              <h1 className="text-5xl lg:text-7xl font-black text-slate-900 leading-[1.1] mb-8">
+                Ageing Actively, <br />
+                <span className="text-emerald-600 font-extrabold italic">Simplified.</span>
+              </h1>
+              <p className="text-xl text-slate-600 mb-10 leading-relaxed max-w-xl">
+                The all-in-one companion for Singapore's seniors. Stay safe with daily check-ins, secure your legacy, and join a vibrant Digital Kampung.
+              </p>
+              
+              <div id="install" className="flex flex-col sm:flex-row gap-4 mb-12">
+                <button 
+                  onClick={() => trackInstallClick('ios')}
+                  className="bg-slate-900 text-white px-8 py-4 rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-black transition-all shadow-xl shadow-slate-200"
+                >
+                  <Smartphone className="w-6 h-6" />
+                  <div className="text-left">
+                    <p className="text-[10px] uppercase opacity-60">Download on the</p>
+                    <p className="text-lg leading-tight">App Store</p>
+                  </div>
+                </button>
+                <button 
+                  onClick={() => trackInstallClick('android')}
+                  className="bg-slate-900 text-white px-8 py-4 rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-black transition-all shadow-xl shadow-slate-200"
+                >
+                  <Download className="w-6 h-6" />
+                  <div className="text-left">
+                    <p className="text-[10px] uppercase opacity-60">Get it on</p>
+                    <p className="text-lg leading-tight">Google Play</p>
+                  </div>
+                </button>
+              </div>
+
+              <div className="flex items-center gap-4 text-slate-400 font-medium">
+                <div className="flex -space-x-2">
+                  {[1,2,3,4,5].map(i => (
+                    <div key={i} className="w-10 h-10 rounded-full border-2 border-white bg-slate-100 flex items-center justify-center overflow-hidden">
+                      <img src={`https://i.pravatar.cc/100?img=${i+10}`} alt="user" />
+                    </div>
+                  ))}
+                </div>
+                <div className="text-sm">
+                  <p className="text-slate-900 font-bold">Over 250+ Pioneers</p>
+                  <p>Joining the Digital Kampung</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="relative flex justify-center lg:justify-end">
+              <div className="absolute -inset-10 bg-emerald-500/10 blur-[120px] rounded-full"></div>
+              {/* Phone Mockup Frame */}
+              <div className="relative w-[300px] h-[600px] bg-slate-900 rounded-[3.5rem] p-3 shadow-2xl border-[8px] border-slate-800">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-slate-800 rounded-b-3xl"></div>
+                <div className="w-full h-full bg-white rounded-[2.5rem] overflow-hidden flex flex-col">
+                  {/* App UI Inside Phone */}
+                  <div className="p-6 pt-10 flex-1">
+                    <div className="flex items-center gap-2 mb-8">
+                      <div className="bg-emerald-600 p-1.5 rounded-lg"><ShieldCheck className="text-white w-4 h-4" /></div>
+                      <span className="font-bold text-slate-900 text-sm">Life Capsule</span>
+                    </div>
+                    <div className="bg-slate-50 p-6 rounded-3xl text-center border border-slate-100 mb-6">
+                      <Bell className="w-10 h-10 text-emerald-500 mx-auto mb-4" />
+                      <h4 className="font-bold text-slate-800">Daily Safety Check</h4>
+                      <p className="text-[10px] text-slate-500 mt-1">Status: Pending</p>
+                      <button className="mt-4 w-full bg-emerald-600 text-white py-3 rounded-2xl text-xs font-black shadow-lg shadow-emerald-100">
+                        I'M DOING WELL
+                      </button>
+                    </div>
+                    <div className="bg-slate-900 text-white p-4 rounded-3xl">
+                       <div className="flex items-center gap-2 mb-3">
+                         <ShieldAlert className="w-3 h-3 text-emerald-400" />
+                         <span className="text-[10px] font-bold">Safety Circle</span>
+                       </div>
+                       <div className="flex -space-x-1">
+                         <div className="w-6 h-6 rounded-full bg-emerald-500 border border-slate-900"></div>
+                         <div className="w-6 h-6 rounded-full bg-blue-500 border border-slate-900"></div>
+                       </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Feature Grid */}
+      <section id="features" className="py-24 bg-slate-50">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-20">
+            <h2 className="text-3xl lg:text-4xl font-black text-slate-900 mb-4">Everything you need for peace of mind.</h2>
+            <p className="text-slate-500 text-lg">Designed specifically for seniors, with simplicity and trust at the core.</p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="bg-white p-12 rounded-[3rem] shadow-sm border border-slate-100 group hover:shadow-2xl transition-all duration-500">
+              <div className="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
+                <Bell className="text-emerald-600 w-8 h-8" />
+              </div>
+              <h3 className="text-2xl font-bold mb-4">Daily Check-in</h3>
+              <p className="text-slate-500 leading-relaxed">A simple "I'm Okay" button used daily. If you miss your signal, your chosen family members are automatically alerted.</p>
+            </div>
+            <div className="bg-white p-12 rounded-[3rem] shadow-sm border border-slate-100 group hover:shadow-2xl transition-all duration-500">
+              <div className="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
+                <Lock className="text-emerald-600 w-8 h-8" />
+              </div>
+              <h3 className="text-2xl font-bold mb-4">The Vault</h3>
+              <p className="text-slate-500 leading-relaxed">Securely store photos, videos, and legal instructions. Your life legacy, kept private until the right time.</p>
+            </div>
+            <div className="bg-white p-12 rounded-[3rem] shadow-sm border border-slate-100 group hover:shadow-2xl transition-all duration-500">
+              <div className="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
+                <Users className="text-emerald-600 w-8 h-8" />
+              </div>
+              <h3 className="text-2xl font-bold mb-4">Digital Kampung</h3>
+              <p className="text-slate-500 leading-relaxed">Don't just age—thrive. Connect with peers, find active ageing events, and build a social support network.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Vision/Problem Section */}
+      <section id="vision" className="py-24 bg-slate-900 text-white relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 relative z-10">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div>
+              <h2 className="text-4xl font-bold mb-8">Redefining Ageing in Singapore</h2>
+              <p className="text-xl text-slate-400 mb-8 leading-relaxed">
+                We understand the social stigma around end-of-life planning. Our solution focuses on <strong>active living</strong> today while ensuring tomorrow is prepared for.
+              </p>
+              <ul className="space-y-4">
+                {[
+                  "Easing the administrative burden on loved ones",
+                  "Ensuring no senior goes unnoticed in an emergency",
+                  "Fostering independence with a digital safety net"
+                ].map((item, i) => (
+                  <li key={i} className="flex items-center gap-3">
+                    <CheckCircle2 className="text-emerald-500 w-5 h-5" />
+                    <span className="text-slate-300 font-medium">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="bg-white/5 p-10 rounded-[3rem] border border-white/10">
+              <div className="flex items-center gap-4 mb-6">
+                 <div className="w-12 h-12 bg-emerald-600 rounded-full flex items-center justify-center font-bold text-xl italic">“</div>
+                 <p className="text-lg font-medium italic text-slate-300">
+                   "Knowing my kids get a ping every morning that I'm active gives us both peace of mind without me feeling like a burden."
+                 </p>
+              </div>
+              <p className="font-bold text-emerald-400">— Uncle Tan, Pilot Participant</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Final CTA */}
+      <section className="py-24 bg-white px-4">
+        <div className="max-w-5xl mx-auto bg-emerald-600 rounded-[4rem] p-12 lg:p-24 text-center text-white shadow-2xl shadow-emerald-200">
+          <h2 className="text-4xl lg:text-6xl font-black mb-8">Ready to secure your peace of mind?</h2>
+          <p className="text-xl text-emerald-50 mb-12 max-w-xl mx-auto font-medium">
+            Join the community of seniors ageing actively and with dignity. Download the app today.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <button 
+              onClick={() => trackInstallClick('ios')}
+              className="bg-white text-slate-900 px-10 py-5 rounded-2xl font-bold text-xl hover:bg-slate-50 transition-all flex items-center justify-center gap-3"
+            >
+              <Smartphone className="w-6 h-6" /> App Store
+            </button>
+            <button 
+              onClick={() => trackInstallClick('android')}
+              className="bg-slate-900 text-white px-10 py-5 rounded-2xl font-bold text-xl hover:bg-black transition-all flex items-center justify-center gap-3"
+            >
+              <Download className="w-6 h-6" /> Google Play
+            </button>
+          </div>
+          {installClicked && (
+             <p className="mt-8 text-white font-bold animate-pulse">Redirecting to store...</p>
+          )}
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-slate-50 py-16 border-t">
+        <div className="max-w-7xl mx-auto px-4 text-center">
+          <div className="flex items-center justify-center gap-2 mb-8">
+            <div className="bg-emerald-600 p-1.5 rounded-lg"><ShieldCheck className="text-white w-4 h-4" /></div>
+            <span className="font-bold text-emerald-900 text-lg">Your Life Capsule</span>
+          </div>
+          <p className="text-slate-400 text-sm max-w-md mx-auto mb-8">
+            Designed for the Singapore Ageing Ecosystem. In partnership with community active ageing centres.
+          </p>
+          <div className="flex justify-center gap-8 text-sm font-bold text-slate-500 border-t border-slate-200 pt-8">
+            <a href="#" className="hover:text-emerald-600">Privacy</a>
+            <a href="#" className="hover:text-emerald-600">Terms</a>
+            <a href="mailto:hello@yourlifecapsule.com" className="hover:text-emerald-600">Support</a>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+};
+
+export default App;
